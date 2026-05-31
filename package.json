@@ -1,7 +1,7 @@
 {
-    "name": "whatsapp-md-bot",
+    "name": "tayyab-x-md-mini",
     "version": "1.0.0",
-    "description": "WhatsApp MD-Style Multi-Command Bot with Baileys",
+    "description": "Tayyab X MD Mini - WhatsApp MD-Style Multi-Command Bot with Baileys",
     "main": "index.js",
     "type": "commonjs",
     "scripts": {
@@ -11,12 +11,12 @@
     },
     "keywords": [
         "whatsapp bot",
-        "Knight Bot Mini",
+        "Tayyab X MD Mini",
         "bot",
         "baileys",
         "md"
     ],
-    "author": "Your Name",
+    "author": "Muhammad Tayyab",
     "license": "MIT",
     "dependencies": {
         "@bochilteam/scraper": "^5.0.1",
