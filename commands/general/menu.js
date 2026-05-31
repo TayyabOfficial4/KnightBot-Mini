@@ -166,7 +166,7 @@ module.exports = {
             forwardingScore: 1,
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
-              newsletterJid: config.newsletterJid || '120363161513685998@newsletter',
+              newsletterJid: config.newsletterJid || '',
               newsletterName: config.botName,
               serverMessageId: -1
             }
