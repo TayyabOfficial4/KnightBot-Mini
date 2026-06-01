@@ -7,8 +7,8 @@ const { franc } = require('franc');
 
 module.exports = {
   name: 'tts',
-  aliases: ['texttospeech', 'say'],
-  category: 'tools',
+  aliases: ['speak', 'say'],
+  category: 'general',
   description: 'Convert text to speech with auto language detection',
   usage: '.tts <text>',
   
