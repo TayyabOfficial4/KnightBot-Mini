@@ -1,52 +1,33 @@
 /**
- * Text to Speech Command - 
+ * Text to Speech Command (Buffer Method)
  */
 
-const { getAudioUrl } = require('google-tts-api');
-const { franc } = require('franc');
+const gTTS = require('gtts');
 
 module.exports = {
   name: 'tts',
-  aliases: ['speak', 'say'],
+  aliases: ['texttospeech', 'say'],
   category: 'general',
-  description: 'Convert text to speech with auto language detection',
+  description: 'Convert text to speech',
   usage: '.tts <text>',
-  
+
   async execute(sock, msg, args, extra) {
-    try {
-      if (args.length === 0) {
-        return extra.reply('❌ Usage: .tts <text>\n\nExample: .tts Hello World');
-      }
-      
-      const text = args.join(' ');
-      
-      // Auto-detect language
-      const langCode = franc(text);
-      
-      // Map common detect codes to Google TTS codes
-      const langMap = {
-        'urd': 'ur',
-        'hin': 'hi',
-        'eng': 'en',
-        'ara': 'ar'
-      };
-      
-      const targetLang = langMap[langCode] || 'en';
-      
-      const url = getAudioUrl(text, {
-        lang: targetLang,
-        slow: false,
-        host: 'https://translate.google.com',
-      });
-      
-      await sock.sendMessage(extra.from, { 
-        audio: { url: url }, 
-        mimetype: 'audio/mpeg', 
-        ptt: true 
-      }, { quoted: msg });
-      
-    } catch (error) {
-      await extra.reply(`❌ TTS Error: ${error.message}`);
+    if (!args || args.length === 0) {
+      return await extra.reply('❌ Usage: .tts <text>');
     }
+
+    const text = args.join(' ');
+
+    const gtts = new gTTS(text, 'en');
+
+    gtts.stream().on('data', async (data) => {
+      await sock.sendMessage(extra.from, {
+        audio: data,
+        mimetype: 'audio/mpeg',
+        ptt: true
+      }, { quoted: msg });
+    }).on('error', async (err) => {
+      await extra.reply('❌ Error generating TTS audio.');
+    });
   }
 };
