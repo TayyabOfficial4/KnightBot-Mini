@@ -1,47 +1,52 @@
 /**
- * TTS - Text to Speech Command
+ * Text to Speech Command - 
  */
 
-const APIs = require('../../utils/api');
+const { getAudioUrl } = require('google-tts-api');
+const { franc } = require('franc');
 
 module.exports = {
   name: 'tts',
-  aliases: ['speak', 'say'],
-  category: 'general',
-  description: 'Convert text to speech using TTS-Nova',
+  aliases: ['texttospeech', 'say'],
+  category: 'tools',
+  description: 'Convert text to speech with auto language detection',
   usage: '.tts <text>',
   
   async execute(sock, msg, args, extra) {
     try {
-      const chatId = extra.from;
-      const text = args.join(' ');
-
-      if (!text) {
-        return extra.reply('Please provide text to convert to speech.\nExample: .tts hi how are you');
+      if (args.length === 0) {
+        return extra.reply('❌ Usage: .tts <text>\n\nExample: .tts Hello World');
       }
-
-      const audioUrl = await APIs.textToSpeech(text);
-
-      // Download audio as buffer
-      const axios = require('axios');
-      const audioResponse = await axios.get(audioUrl, {
-        responseType: 'arraybuffer',
-        timeout: 30000
+      
+      const text = args.join(' ');
+      
+      // Auto-detect language
+      const langCode = franc(text);
+      
+      // Map common detect codes to Google TTS codes
+      const langMap = {
+        'urd': 'ur',
+        'hin': 'hi',
+        'eng': 'en',
+        'ara': 'ar'
+      };
+      
+      const targetLang = langMap[langCode] || 'en';
+      
+      const url = getAudioUrl(text, {
+        lang: targetLang,
+        slow: false,
+        host: 'https://translate.google.com',
       });
       
-      const audioBuffer = Buffer.from(audioResponse.data);
-
-      await sock.sendMessage(chatId, {
-        audio: audioBuffer,
-        mimetype: 'audio/mp3',
-        ptt: true // Play as voice message
+      await sock.sendMessage(extra.from, { 
+        audio: { url: url }, 
+        mimetype: 'audio/mpeg', 
+        ptt: true 
       }, { quoted: msg });
-
+      
     } catch (error) {
-      console.error('TTS command error:', error);
-      await extra.reply(`❌ Failed to generate speech: ${error.message}`);
+      await extra.reply(`❌ TTS Error: ${error.message}`);
     }
   }
 };
-
-
